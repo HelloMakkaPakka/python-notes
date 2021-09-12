@@ -1,0 +1,166 @@
+tkinter ：Python3.x 版本使用的库名为 tkinter,即首写字母 T 为小写
+    通过 import tkinter 导入 tkinter 包
+    通过 from tkinter import tix 导入 tix 包
+    可变变量：python中的字符串、整数、浮点数和布尔值都是不可变的，所有tkinter自带了一些可以实时更新的类型
+        IntVar StringVar BooleanVar DoubleVar
+        #可变变量.set(#值) ：指定目标可变变量为目标值
+        #可变变量.get() ：获取目标可变变量的值
+    
+    窗口：
+        #窗口名 = tkinter.Tk() ：实例化一个窗口
+        #窗口名.titile('#窗口标题') ：命名窗口标题，默认为 tk
+        #窗口名.geometry('#长x#宽±#X距离±#Y距离') ：设置窗口大小和位置，-时为距屏幕右边或下边
+        #窗口名.resizable(#宽, #长) ：设置窗口可否拉伸
+        #窗口名.iconbitmap('#图标路径') ：设置窗口图标，后缀为ico
+        #窗口名.mainloop() ：命令窗口不断刷新，直到关闭该窗口
+        #窗口名.winfo_screenwidth() ：获取屏幕宽度
+        #窗口名.winfo_screenheight() ：获取屏幕高度
+        #窗口名.quit() ：停止TCL解释器
+        #窗口名.destroy() ：终止循环并删除所有小部件
+        #窗口名.withdraw() ：隐藏窗口或组件
+        #窗口名.deiconify() ：显示隐藏的窗口或组件
+        #窗口名.protocol('WM_DELETE_WINDOW', #事件) ：显示关闭窗口时执行目标动作
+    
+    控件：
+        tk 控件：
+            Frame ：框架，用于承载其它GUI元素
+            LabelFrame ：容器控件，用于复杂的窗口布局
+            Toplevel ：顶层，类似框架，为其它的控件提供单独的容器
+            Lable ：标签，用于显示不可编辑的文本或图标
+                显示图片：(PS：在函数中调用时应声明图片变量为全局变量 global #img)
+                    gif, png 格式：
+                        >>>#img_gif = tkinter.PhotoImage(file = '#目标图片路径')
+                        >>>#label_img = tkinter.Label(image = img_gif)
+                        >>>#label_img.pack()
+                    从 PIL 导入 Image 和 ImageTk 以显示更多格式的图片：
+                        >>>#img_open = Image.open('#目标图片路径')
+                        >>>#img_png = ImageTk.PhotoImage(img_open)
+                        >>>#label_img = tkinter.Label(image = #img_png)
+                        >>>#label_img.pack()
+            Button ：按钮，点击时执行一个动作
+                使用 lambda 传参 command = lambda: #函数(#参数)
+                #button[state] = tkinter.DISABLE ：禁用目标按钮
+            Checkbutton ：复选框，允许用户选择或反选一个选项
+                command ：每当复选框被点击时，执行一次指令
+                .select() ：指定复选框为选中状态
+                .deselect() ：指定复选框为未选中状态
+            Radiobutton ：单选框，允许用户从多个选项中选取一个
+            Entry ：单行文本框，显示一行文本
+                .get() ：获取文本框中的值
+            Text ：多行文本框，显示多行文本
+            Spinbox ：与Entry类似，但是可以指定输入范围值
+            Canvas ：画布，提供绘图功能（直线、椭圆、多边形、矩形）可包含图形或位图
+            Listbox ：列表框，一个选项列表，用户可从中选择
+                .insert(#索引, #字符串) ：给列表框添加文本
+                .get(#索引) ：返回列表框目标索引的项目
+                特殊序列号：
+                    active 表示选中的项目
+                    end 表示最后一行
+            Menu ：菜单，点击后弹出一个选项列表，用户可从中选择
+            Menubutton ：菜单按钮，用来包含菜单的组件（下拉式、层叠式等）
+            Scale ：进度条，线性滑块组件，可设定起始值和结束值，会显示当前位置的精确值
+            Scrollbar ：滚动条，对其支持的组件提供滚动功能
+            PanedWindow ：一个窗口布局管理的插件
+            messageBox ：消息框，用于显示应用程序的消息框
+        tix 控件：(已弃用)
+            Balloon ：气球，当光标悬停在气泡绑定的组件时，将会显示一个文本窗口
+                .bind_widget(#组件) ：绑定组件
+                    balloonmsg ：提示的信息
+                    statusmsg ：在状态栏显示的信息
+        ttk 控件：
+            Combobox ：下拉框
+                #combobox['value'] = ('#值1', '#值2', ...) ：为下拉框赋值
+                .current(#索引) ：指定下拉框的默认值为目标索引的值
+                .bind('<<ComboboxSelected>>', #事件) ：为下拉框绑定事件
+                .get() ：取值
+    
+    共同属性：
+        background(bg) ：指定控件的背景色
+            支持：所有
+        foreground(fg) ：指定控件的前景色
+            不支持：Canvas Frame Scrollbar Toplevel
+        relief ：指定控件3D效果
+            参数：raised sunken flat ridge solid groove
+            支持：所有
+        borderwidth(bd) ：指定控件外围或内部3D边界的宽度
+            支持：所有
+        anchor ：定义信息在控件内的显示方位
+            参数： n ne e se s sw w nw center ，如center使信息显示在控件的中心
+            支持：Button Checkbutton Label Message Menubutton Radiobutton
+        cursor ：指定控件使用的鼠标光标
+            参数：arrow circle clock cross dotbox exchange fleur heart man mouse pirate plus shuttle sizing spider spraycan star target tcross trek watch
+            支持：所有
+        text ：指定控件中显示的文本
+            支持：Button Checkbutton Label Menubutton Message Radiobutton
+        textvariable ：指定一个变量名，变量值转变为字符串显示在控件上，变量值改变时控件将自动更新以反映新值
+        font ：指定控件内部文本的字体
+            参数：以元组的形式传递，('#字体名称', #字体大小, '#字体强调 #字体倾斜 #字体下划线 #字体删除线')
+                family ：字体名字
+                size ：字体大小，单位为磅，指定为负数时单位为像素
+                weight ：字体强调（normal bold）
+                slant ：字体倾斜（roman italic）
+                underline ：字体下划线（0 1）
+                overstrike ：字体删除线（0 1）
+            不支持：Canvas Frame Scrollbar Toplevel
+        justify ：设置控件中文本不同行之间的对齐方式
+            参数：left right center
+            支持：Button Checkbutton Entry Label Menubutton Message Radiobutton
+        wraplength ：指定行的最大字符数，超过最大字符数的行将转到下行显示，小于或等于0时只出现在文本有换行符的地方
+            支持：Button Checkbutton Label Menubutton Radiobutton
+        padx ：设置控件x方向需要的边距，大部分控件只用此项于文本
+            支持：Button Checkbutton Label Menubutton Message Radiobutton Text
+        pady ：设置控件y
+方向需要的边距，大部分控件只用此项于文本
+            支持：Button Checkbutton Label Menubutton Message Radiobutton Text
+        width ：指定控件宽度，值小于等于0时选择一个能够容纳目前字符的宽度
+            不支持：Menu
+        height ：指定窗口的高度，以字符高度为单位
+            支持：Button Canvas Frame Label Listbox Checkbutton Radiobutton Menubutton Text Toplevel
+        activebackground ：指定元素活动时的背景颜色
+            支持：Button Checkbutton Menu Menubutton Radiobutton Scale Scrollbar
+        activeforeground ：指定元素活动时的背景颜色
+            支持：Button Checkbutton Menubutton Radiobutton
+        disableforeground ：指定控件为禁用状态时的前景颜色
+            支持：Button Checkbutton Radiobutton Menu Menubutton
+        state ：指定控件的状态
+            参数：normal disable active
+            支持：Button Checkbutton Entry Menubutton Scale Radiobutton Text
+        bitmap ：指定一个位图在控件中显示
+            参数：error hourglass info qusethead question warning gray12 gray25 gray50 gray75
+        image ：指定所在控件中显示的图像，图片格式只能为gif
+            支持：Button Checkbutton Label Menubutton Raidobutton
+        command ：指定一个与控件关联的命令，通常在鼠标离开控件时被调用，命令带()为直接调用
+            支持：Button Checkbutton Radiobutton Scale Scrollbar
+        show ：指定所在控件代替字符显示的文本
+            支持：Entry
+    
+    布局方式：
+        相对布局 pack()：
+            参数：
+                fill ：指定控件填充方式，参数有 x y both，如为x时控件和其父窗口一样宽
+                padx ：指定控件水平方向的外边距
+                pady ：指定控件竖直方向的外边距
+                ipadx ：指定控件水平方向的内边距
+                ipady ：指定控件竖直方向的内边距
+                side ：指定控件的排列方式，参数有 left right，如为left时控件从左到右排列
+        绝对布局 place()：
+            参数：
+                x y width height
+                relx ：指定控件的x坐标，以父容器总高度为1，其值应在0.0~1.0之间
+                rely ：指定控件的y坐标，以父容器总高度为1，其值应在0.0~1.0之间
+                relwidth ：指定控件的宽度，以父容器总宽度为1，其值应在0.0~1.0之间
+                relheight ：指定控件的高度，以父容器总高度为1，其值应在0.0~1.0之间
+        表格布局 grid()：
+            参数：
+                row column 
+                rowspan ：指定控件跨越的行数
+                column ：指定控件跨越的列数
+                sticky ：指定控件中文本的对齐方式
+    
+    文件选择：
+        filedialog ：
+            .askopenfilename() ：弹出文件资源管理器以选择文件，返回选中的文件路径
+    
+    其它：
+        #root.after(#time, #function) ：在目标时间后执行目标函数
+        #root.after_cancel(#使用 after 创建循环的变量) ：结束目标循环

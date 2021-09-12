@@ -1,0 +1,299 @@
+爬虫
+    爬虫的法律问题：
+        个人信息、商业秘密与国家秘密是数据爬取的红线
+        爬取公开的数据，通常不会被认为是侵权
+        《刑法》第285条_非法侵入计算机信息系统罪：违反国家规定，侵入国家事务、国防建设、尖端科学技术领域的计算机信息系统的，处三年以下有期徒刑或者拘役。 违反国家规定，侵入前款规定以外的计算机信息系统或者采用其他技术手段，获取该计算机信息系统中存储、处理或者传输的数据，或者对该计算机信息系统实施非法控制，情节严重的，处三年以下有期徒刑或者拘役，并处或者单处罚金；情节特别严重的，处三年以上七年以下有期徒刑，并处罚金。 提供专门用于侵入、非法控制计算机信息系统的程序、工具，或者明知他人实施侵入、非法控制计算机信息系统的违法犯罪行为而为其提供程序、工具，情节严重的，依照前款的规定处罚。 单位犯前三款罪的，对单位判处罚金，并对其直接负责的主管人员和其他直接责任人员，依照各该款的规定处罚。
+    浏览器的工作原理：
+        浏览器通过 DNS（Domain Name System）将域名转换成对应的 IP 地址，从而找到对应网站的服务器
+        输入网址（URL）， 访问该网址对应的服务器（这个过程叫 请求 (request) ）， 服务器将网站内容（一般是源代码，HTML代码）发送给服务器（这个过程叫 响应 (respond) ）， 解析源代码
+        爬虫看到的网页是 HTML，我们在浏览器里看到的网页是经过浏览器对 HTML 处理过后的样子
+
+    爬虫的工作原理：
+        第一步：获取数据，爬虫会根据我们提供的网址，向服务器发起请求获取数据；
+        第二步：处理数据，对获取的数据进行处理，得到我们需要的部分；
+        第三步：存储数据，将处理后的数据保存起来，便于后续的使用和分析等。
+
+    使用 requests 库，使用前需导入 requests 模块
+
+    函数：
+        #res = requests.get(#URL) ： 向目标网站发起 get请求 ，将返回的结果存到目标变量中，变量类型为 Response 对象
+        #res = requests.post(#URL) ： 向目标网站发起 post请求 ，此请求的参数通过字典的形式传递给 data 参数
+        print(#res.status_code) 输出 <Respond [#状态码]> ： 状态码：
+            响应状态码, 含义, 例子, 含义
+            1xx, 消息, 100, 继续发出请求
+            2xx, 请求成功, 200, 请求成功
+            3xx, 重定向, 301, 永久重定向
+            4xx, 客户端错误, 404, 找不到资源
+            5xx, 服务端错误, 503, 服务不可用
+        print(#res.cookies) 输出 cookie
+        #file = open(#文件全名, #文件打开方式)  #Tips：open为python内置函数，返回 file 对象： 打开方式默认为 r (read, 只读)，
+            打开方式还有 w (write, 只写), b (binary, 二进制模式), a (append, 追加模式（在文件末尾写入内容）)  Tips：在 w 和 a 模式下，如果你打开的文件不存在，那么 open() 函数会自动帮你创建一个
+            使用 open() 函数打开文件，操作完毕后，最后一定要调用 file 对象的 close() 方法关闭该文件： #file.close()
+            或使用 with open('孔乙己.txt', 'w') as #file ，它在最后会自动关闭文件
+        #file.write(#内容) ： 写入内容
+
+    方法：
+        #res.status_code ： 返回响应 HTTP 状态码
+        #res.text ： 返回响应内容的字符串形式（源代码）
+        #res.content ： 返回响应内容的二进制形式
+        #res.encoding ： 返回python推测响应内容的编码，通过为 res.encoding 赋值手动设置编码格式
+
+    BeatifulSoup：
+        通过 from bs4 import BeautifulSoup 语句导入 BeautifulSoup
+        使用 BeautifulSoup(res.text#HTML文本, 'html.parser'#HTML解析器) 语句将网页源代码的字符串形式解析成了 BeautifulSoup 对象
+        方法：
+            .find('#HTML标签名称', #HTML属性名='#属性值') ： 返回符合所有条件的首个数据（Tag 对象）  Tips：当一个条件无法精确定位到我们想要的数据时，可以传入多个HTML属性进行筛选，返回同时符合这些条件的数据， .find_all 方法也是
+            .find_all('#HTML标签名称', #HTML属性名='#属性值') ： 返回以符合所有条件的所有数据排列的列表（Tag 对象组成的列表）
+            .find(#筛选目标).#标签名 ：返回符合所有条件的首个数据
+            #目标标签.attrs['#目标属性'] ：返回目标标签的目标属性的属性值
+
+    Tag 对象：
+        属性/方法：
+            .find() #内容和返回值同 BeautifulSoup 对象
+            .find_all() #内容和返回值同 BeautifulSoup 对象
+            .text 获取标签的字符串内容
+            tag['#属性名'] 获取标签HTML属性的值
+            通过将HTML属性名作为键，得到对应属性的值，和字典取值一样的方式
+
+    CSS选择器：
+        soup.select('#所有筛选条件')
+        # 代表 id ，如 #login 表示 id='login' 的所有元素
+        . 代表 class ，如 .item 表示 class='item' 的所有元素
+        可以通过标签名选择对应的元素，如 a 表示所有的 a 元素
+        可以组合选择同时符合条件的元素，如 a#login 表示所有 id='login' 的 a 元素， #login.item 表示所有 id='login' 且 class='item' 的元素， .item.book 表示所有 class 同时为 item 和 book 的元素
+        选择同时符合条件的元素，选择器之间不能有空格，用空格隔开即是选择子元素
+        标签的属性值中凡是出现空格的地方，在写CSS选择器的时候，都用 . 代替
+        子元素选择：并列关系连一起，层级关系隔空格，第一层关系用 > 隔开
+            .item .book 表示选择所有 class='item' 的元素里面 class='book' 的元素，即嵌套在 class='item' 元素里面 class='book' 的元素。嵌套可以是任意层级的，若只要嵌套在第一层符合条件的元素，可用 > 分隔，如 .item > .book
+
+        #目标元素:nth-child(#n) ：选择所有属于其父元素的第n个子元素的元素，不论元素的类型
+
+    查询字符串（?#key1=#value1&#key2=#value2）：
+        “?”前面是网页的地址，其后是查询字符串。以键值对 key=value 的形式赋值，多个键值对之间用&连接在一起。如：?a=1&b=2 表示 a 的值为 1 ， b 的值为 2 。
+        是用于搜索的参数或处理的数据传给服务器处理
+
+    反爬虫：
+        若不加以节制地访问目标网站，会使目标网站超负荷运转，一些网站可能因此瘫痪，这是不道德甚至违法的
+        判别身份：
+            请求头(request headers)：浏览器和爬虫，访问网站时都会带上一些信息用于身份识别，这些信息都被存储在请求头里。大部分情况只需要添加 user-agent 字段即可，定义一个 字典（请求头字段作为键，字段内容作为值）传递给 headers 参数即可
+                用户代理(user-agent)：包含了操作系统、浏览器类型、版本等信息，通过修改伪装成浏览器， requests 默认的 user-agent 是 python-requests/2.22.0
+                请求来源界面(referer)：
+                谁发起的请求(origin)：
+                主机名及端口号(host)：
+        IP限制：
+            IP(Internet Protocol)：全称互联网协议地址，分配给用户上网使用的网际协议的设备的数字标签
+            只要知道服务器的IP地址就能找到对应的服务器
+            在网上冲浪时终端会被分配一个IP地址，这样服务器就知道是谁在访问它们的网站了
+            代理(proxies)：
+                #proxies = {'http': #'http代理IP地址', 'https': #'https代理IP地址'}
+                定义一个字典，传递给 proxies 参数，以 http 和 https 二协议作为键，对应IP代理作为值，最后将整个字典作为 proxies 参数传递给 requests.get() 方法即可
+        遇到令牌(token)之类的校验，可以在网页源代码或请求中寻找
+
+    robots.txt ：
+        存放于网站根目录下的文本文件，用于告诉爬虫此网站中的哪些内容是不应被爬取的，哪些是可以被爬取的
+        在网站域名后加上 /robots.txt 即可查看君子协议
+        User-agent: *  ：表示针对所有爬虫（* 是通配符）
+        User-agent: Wandoujia Spider  ：表示针对 Wandoujia Spider 这个爬虫
+        Disallow: /search  ：表示禁止爬取 /search 这个页面，其它同理
+        Disallow: /  ：表示禁止整个网站的爬取
+
+    API (Application Programming Interface，应用程序编程接口)：
+        Network:
+            每一个请求的详细信息里的 Respone 里是服务器返回的内容
+            一次性加载整个网站很慢，为了提升网页加载速度，有些网站将网站的骨架和内容拆分开，加载骨架后再通过多个请求获取内容，最终组成完整的网站
+            请求类型过滤器：
+                All ：全部类型
+                XHR ：XMLHttpRequest 类型
+                JS ：JavaScipt 类型
+                CSS ：CSS 类型
+                Img ：图片类型
+                Media ：音视频类型
+                Doc ：文档类型
+            General ：
+                Request URL ：请求链接，即 API 的链接
+                Request Method ：请求方式
+            params 参数：
+                >>>params = {'key1': 'value1', 'key2': 'value2'}
+                >>>res = requests.get('http://httpbin.org/get', params = params)
+                >>>print(res.url)
+                http://httpbin.org/get?key2=value2&key1=value1
+                Tips：
+                    字典里值为 None 的键都不会被添加到URL的查询字符串里
+                    也可以将一个列表作为值传入
+
+                查询字符串转字典工具：https://www.convertonline.io/convert/query-string-to-json
+
+    JSON (JavaScript Object Notation)：
+        轻量级数据交换格式，易于人阅读和编写，也易于机器解析和生成
+        JSON 建构于两种结构： 键值对的 集合 和 值的有序列表 ，分别对应 Python 里的字典和列表，它的本质是符合特定格式要求的字符串
+        JSON 中字符串必需使用英文的双引号
+        大部分现代计算机语言都支持 JSON ，JSON 是在编程语言之间通用的数据格式
+        解析 JSON ：
+            #res.json() ：此方法转换后的结果是 Python 中对应的字典或列表，不再需要通过 BeautifulSoup 对网页源代码解析再提取数据
+
+    cookie ：
+        浏览器储存在用户电脑上的一小段文本文件，容量上限为4KB，该文件里存了加密后的用户信息、过期时间等
+        每次请求都会带上 cookie，登录过某网站后的一段时间再次打开此网站便不再需要登录
+        cookie 过期后会失效，此时需要重新登录，生成新的 cookie
+
+    session ：
+        通过 requests.Session() 创建一个 session
+        具有主要 requests 的所有方法
+        有了 session，多个请求之间就可以共享 cookie ，后续请求不再需要传 cookies 参数
+        session.headers.update(#headers) ：更新全局的 headers ，通过该 session 发送的请求都会使用我们设置的全局 headers
+        可以给某个请求单独设置 headers。这时，该请求将同时拥有全局和单独设置的 headers。如果两个 headers 里的字段重复，会优先使用单独设置的 headers 字段的值
+
+    请求：
+        GET ：获取数据，参数显示在请求地址里
+        POST ：提交数据，参数显示在 From Data 里
+        PUT
+        DELETE
+
+    数据库：
+        关系型数据库 MySQL
+        非关系型数据库 MongoDB
+
+    并发程序：
+        requests 请求网页时做有三个步骤：
+            第一步：根据链接、参数组成一个请求
+            第二步：把这个请求发往要爬取的网站并等待网站响应，占绝大部分时间
+            第三步：把响应结果包装成一个响应对象
+        通过并发，可以在机器空闲时如上第二步运行另外的任务
+        编写方式：
+            进程
+            协程
+            函数式编程
+            线程：
+                from concurrent import futures ：导入 concurrent.futures 包
+                #executor = futures.ThreadPoolExecutor(max_workers=#最大同时任务数) ：初始化一个线程池并设置其最大任务同时执行数
+                >>>#fs = [] ：创建一个保存所有任务的 futures 对象的列表
+                >>>for #url in #urls:
+                >>>    #f = executor.submit(#提交要运行的函数, #提交的函数运行时的参数) ：返回 future 对象，在并发编程领域其通常保存函数调用完成时的结果
+                >>>    #fs.append(#f) ：提交任务到用于保存 future 对象的列表
+                >>>futures.wait(#fs) ：等待直到所有 futures 对象都有结果为止，若无此步骤直接获取某个任务的结果时同样会等待它完成
+                #f.result() ：获取任务的结果，结果的类型取决于提交的任务
+                线程池：
+                    线程池限制了最多同时运行的线程数。比如我们初始化一个最大任务同时执行数为 5 的线程池，这样即使我们提交了 100 任务到这个池子里，同时在运行的也只有五个。而一个任务被完成后，也会被移出线程池腾出空间
+
+    Scrapy （一个网络爬虫框架）：
+        组成部分：
+            Scrapy Engine ：Scrapy 引擎，负责控制整个系统的数据流和事件的触发
+            Scheduler ：调度器，接收 Scrapy 引擎发来的请求并将其加入队列中，等待引擎后续需要时使用
+            Downloader ：下载器，爬取网页内容，将爬取到的数据返回给 Spiders（爬虫）
+            Spiders ：爬虫，这部分是核心代码，用于解析、提取出需要的数据
+            Item Pipeline ：数据管道，处理提取出的数据，主要是数据清洗、验证和数据存储
+            Downloader middlewares ：下载器中间件，处理 Scrapy 引擎和下载器之间的请求和响应
+            Spider middlewares ：爬虫中间件，处理爬虫输入的响应以及输出结果或新的请求
+        数据流程：
+            Scrapy 引擎打开一个网站，找到处理该网站对应的爬虫，并爬取网页的第一个页面
+            Scrapy 引擎从爬虫中获取第一个页面地址，并将其作为请求放进调度器中进行调度
+            Scrapy 引擎从调度器中获取下一个页面的地址
+            调度器返回下一个页面的地址给 Scrapy 引擎，Scrapy 引擎通过下载器中间件传递给下载器进行爬取
+            爬取到数据后，下载器通过下载器中间件回传给 Scrapy 引擎
+            Scrapy 引擎将爬取到的数据通过爬虫中间件传递给爬虫进行数据解析、提取
+            爬虫处理完数据后，将提取出的数据和新的请求回传给 Scrapy 引擎
+            Scrapy 将提取出的数据传给数据管道进行数据清洗等操作，同时将新的请求传递给调度器准备进行下一页的爬取
+            重复 2-8 步，直到调度器中没有新的请求，数据爬取结束
+        命令行操作：
+            'scrapy' ：检测 Scrapy 安装情况，若出现 'Scrapy #Scrapy版本号'，则 Scrapy 安装成功
+            'explorer .' ：打开执行命令的当前所在路径的文件夹，此地址做为带有 Scrapy模块 的 py文件 存放地址，'.' 代表当前文件夹。Mac 系统用 'open .'
+            'scrapy runspider #目标文件全名 -t #输出的文件格式 -o #输出的文件全名 ' ：运行目标文件并输出结果文件 , 命令行所在文件夹为输出文件地址
+            'scrapy shell "目标URL"' ：访问目标URL并记录获取到的结果，进入交互环境
+            'scrapy startproject #project' ：在当前目录创建一个项目
+        ▼#project
+            ▼#project ：              # 项目代码所在目录
+                __init__.py
+                items.py ：             # 定义数据的格式
+                middlewares.py
+                pipelines.py ：        # 处理数据、输出到文件等
+                settings.py ：          # 一些设置
+                ▼spiders ：            # 爬虫所在目录
+                    __init__.py
+            scrapy.cfg
+            'scrapy genspider #article #URL' ：创建一个叫做 article 的爬虫，并爬取 目标URL 下的网页
+
+        CSS 选择器：
+            response.css('#目标标签') ：从响应里解析出所有 目标标签
+            #标签A.css('#标签B.#目标值 #标签C') ：从 标签A 里解析出 class 为 目标值 的 标签B 下面的 标签C
+            #目标标签.attrib['#目标属性名'] ：取出 目标标签 里的 目标属性值。attrib 属性实际上是一个字典，里面存储了元素上的所有 HTML 属性
+            response.css('#目标标签.#class值::attr(#目标属性名)').get() ：从响应里解析出 class 为 class值 的 目标标签 的 href 属性，并取出符合条件的第一个值
+            response.css('#目标标签.#class值::attr(#目标属性名)').getall() ：从响应里解析出 class 为 class值 的 目标标签 的 href 属性，并取出符合条件的所有值
+
+        >>>class #类名(scrapy.Spider) #定义一个继承自 scrapy.Spider 的类
+        >>>import scrapy #导入 Scrapy 库
+        >>>start_urls = ['目标URL'] #设定启动页面，向其发起请求并得到一个响应
+        >>>def parse(self, response): #Scrapy 会将响应交给默认解析方法 parse 处理，响应 response 为其第一个参数
+        >>>    #result = #目标数据 #筛选步骤略
+        >>>    yield #result #将爬取数据交给 Scrapy，Scrapy 会将数据写入到目标文件
+        >>>    yield response.follow(#next_page, self.parse) #爬取下一个网页并将响应结果交给 解析方法 parse 处理
+
+        优势：
+            不需要 requests ：把链接交给 Scrapy 就会自动帮你完成请求
+            不需要 concurrent ：Scrapy 会自动把全部的请求都变成并发的
+            不需要 BeautifulSoup ：Scrapy 提供了 CSS 选择器，使用 BeautifulSoup 只需在 parse() 中将 response.text 传递给 BeautifulSoup 进行操作即可
+            不需要实现写入文件的代码 ：使用 yield 通知 Scrapy 结果即可自动写入文件
+
+网页开发（web开发）：
+    新建 HTML 文件；
+    添加 HTML 元素；
+    通过 CSS 来调整元素样式；
+    通过 JavaScript 来配置页面的交互动作等。
+
+    HTML （下级标签比上级缩进4格）：
+        <html>
+            <head>
+                <title>我的第一个网页</title>
+            </head>
+            <body>
+                Hello，World
+            </body>
+        </html>
+    
+        元素： <#开始标签>#内容</结束标签>
+        标签：
+            非自闭合标签： <#开始标签>#元素内容</结束标签>
+            自闭合标签： <#元素属性/>
+            元素属性语法： #属性名='#属性值'，必须在开始标签中，元素拥有多个属性用空格分隔即可
+        由 html, head, body, title 这四个元素组成：
+            <html>元素称为根元素，所有内容都包含在此元素里
+            <head>元素内容是网页头，存放网页相关信息、加载样式和脚本等
+            <body>元素内容是网页体，存放网页内容
+        网页头：
+            <meta charest='#编码方式'/> ： 定义网页的编码方式
+            <title>#网页标题</title> ： 指定网页标题
+        网页体：
+        常见元素：
+            标签, 用法, 示例
+            h1, 一级标题, <h1>#标题1</h1>  （HTML 提供了 6 个等级的标题，即 <h1>、<h2>、<h3>、<h4>、<h5>、<h6>，重要性依次递减，也就是说 <h1> 是最大的标题，<h6> 是最小的标题。）
+            h2, 二级标题, <h2>#标题2</h2>
+            p, 段落标签, <p>#段落</p>
+            a, 超链接，用来跳转网页, <a href=#跳转的网页>#显示的内容</a>
+            img, 图片标签，用于展示图片, <img src="pic.jpg"/>
+            div, 用于定义文档的块区域, <div>#区域</div>
+            img, 呈现图片, <img src="#图片地址" />
+        元素属性（#属性名=#'属性值'）：
+            标识元素（给 JavaScript 找到对应的元素做出交互）：
+                id ： 唯一标识，其值在网页里是唯一的
+                class ： 一类标识，其值可以用在同一类所有的元素中，在使用 .find 和 .find_all 方法时用 class_ 表示 HTML 中的 class
+
+其它：
+    下载：
+        文本一般以字符串形式写入文件（res.text）
+        图片、音频、视频一般以二进制形式写入文件（res.content）
+    超链接：实现从一个网页跳入另一个网页，将一个个网页链接在一起形成互联网
+    编码格式：
+        ASCII, GB2312, GBK, Unicode, UTF-8
+    协议：
+        http 和 https 都是浏览器和服务器之间通讯的协议，https 更加安全，也被越来越多的网站所使用
+    爬虫选择：
+        静态网页：使用 BeautifulSoup 解析网页源代码
+        动态网页：找到加载数据的 API ，从 API 中爬取数据
+    参数汇集：
+         headers, proxies, params, data, cookies
+    爬取方式的选择：
+          大规模爬取数据时，selenium 的爬取速度和资源占用率都不太理想。所以，通常情况下，我们还是会用 requests 和 BeautifulSoup 爬取数据
+    反爬虫机制的差异：一般手机版的网页爬取数据比较容易，没有那么多的反爬虫限制
+    识别网页状态：若目标爬取数据在网页源代码中则是静态网页不然则是动态网页
+    concurrent 是 Python 自带的库，具有线程池和进程池、管理并行编程任务、处理非确定性的执行流程、进程/线程同步等功能
+    一个设备同时运行的线程数取决于它的处理器、内存的配置
+    线程池的最大同时任务数建议在10左右，电脑性能好且不担心被爬取网站封禁的可以加到几十，性能差的可以考虑降到5

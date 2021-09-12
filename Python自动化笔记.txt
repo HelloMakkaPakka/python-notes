@@ -1,0 +1,133 @@
+自动化：
+    selenium ：
+        通过 from selenium import webdriver 从 selenium 中导入 webdriver
+        将浏览器实例化赋值给#browser变量，目标浏览器被打开
+        获取数据：
+            #browser.get('#目标网站') ：打开目标网站
+            #browser.quit() ：关闭目标浏览器
+            #browser.page_source ：返回目标网页源代码（字符串），使用 time.sleep() 实现等待几秒以加载完全网页
+        处理数据（以下方法都是获取符合条件的首个元素，通过修改 element 为 elements 以获取符合条件的所有元素，返回一个由 WebElement 对象排列的列表）：
+            .find_element_by_tag_name(#tag_name) ：通过标签查找元素
+            .find_element_by_class_name(#class_name) ：通过 class 属性名查找元素
+            .find_element_by_id(#id) ：通过 id 查找元素
+            .find_element_by_name(#name) ：通过 name 属性查找元素
+            .find_element_by_link_text(#link_text) ：通过链接文本查找元素
+            .find_element_by_partial_link_text(#partial_link_text) ：通过链接的部分文本查找元素
+        WebElement 对象：
+            通过“处理数据”中的方法获取的都是 WebElement 对象，类比 BeautifulSoup 里的 Tag 对象
+            #WebElement.text ：返回元素文本内容
+            #WebElement.get_attribute('#属性名') ：返回元素属性值
+            支持 selenium 查找元素的方法
+        控制方法：
+            #目标元素.click() ：模拟点击元素
+            #目标输入框.send_keys('#输入内容') ：模拟按键输入
+        静默设置（设置浏览器静默运行）：
+              初始化配置： options = webdriver.ChromeOptions()
+              静默模式： options.add_argument('--headless')
+              将配置传入浏览器： browser = webdriver.Chrome(options=options)
+
+    操作 Excel 文件：
+        openpyxl ：
+            官网：https://openpyxl.readthedocs.io/en/stable/tutorial.html
+            写文件：
+                from openpyxl import Workbook  #从 openpyxl 引入 Workbook（工作簿）类
+                #wb = Workbook() ：通过 Workbook 类实例化一个工作簿（创建一个空的 Excel文件）
+                #sheet = #wb.create_sheet(#工作表的插入位置) ：创建一个新的工作表，插入位置默认为末尾
+                #sheet = #wb.active ：选择默认工作表
+                #sheet = #wb['#目标工作表'] ：选择默认工作表
+                #sheet.title = '#新表名' ：重命名工作表
+                #del wb['目标工作表名'] ：删除目标工作表
+                #wb.remove[#目标工作表] ：删除目标工作表
+                #sheet['目标单元格'] = #数据 ：在目标单元格写入数据
+                #sheet.cell(#行数, #列数).value = #数据 ：在目标单元格写入数据
+                #sheet.append(#列表) ：往工作表内写入一行数据，搭配 循环 可往工作表内逐行写入数据
+                #wb.save('#文件名.xlsx') ：将 Excel 文件保存为 xlsx 格式
+            读文件：
+                from openpyxl import load_workbook #从 openpyxl 引入 load_workbook 类
+                #wb = load_workbook('#Excel 文件名.xlsx') ：打开文件
+                #wb.sheetnames ：返回由目标文件中所有工作表名称组成的列表
+                #sheet.title ：返回目标工作表名
+                #sheet = wb['#目标工作表'] ： 选择目标工作表
+                #sheet['#列名#行数'].value ：返回目标单元格的值
+                #sheet.cell(#行数, #列数).value ：返回目标单元格的值
+                #sheet['#起始列名行数:#结尾列名行数'] ：选定区域单元格，返回
+                #sheet.values ：返回以表格每行数据为元素的元组
+                #sheet.max_column ：返回最大列数
+                #sheet.min_column ：返回最小列数
+                #sheet.max_row ：返回最大行数
+                #sheet.min_row ：返回最小行数
+        CSV ：
+            import csv
+            读文件：
+                使用 open() 函数打开 csv 文件：
+                    #file = open('#文件名', newline='')  #记得使用 close() 函数关闭
+                    或者 with open('#文件名', newline='') as file 语句
+                    Tips ：
+                        open() 函数中默认 'r'
+                        参数 newline='' 是为了让文件内容中的换行符能被正确解析，建议用 csv 处理文件时都加上此参数
+                #csv_reader = csv.reader(#file) ：通过 reader() 函数返回 可迭代可读取对象 为目标变量赋值（为可迭代对象）
+                使用 循环 读取 可读取对象：
+                    >>>for #row in #csv_reader:
+                    >>>  #接处理数据的代码，如使用 print(#row) 打印出以每行的元素组成的列表
+            写文件：
+                使用 open() 函数打开或新建 csv 文件：
+                    #file =open('#文件名', 'w', newline='')
+                    或者 with open('#文件名', 'w', newline='') 语句
+                #csv_writer = csv.writer(#file) ：通过 writer() 函数返回 可写入对象 为目标变量赋值
+                #csv_writer.writerow(#列表) ：往文件内写入一行数据，搭配 循环 可往文件内逐行写入数据
+                #csv_writer.writerows(#二维列表) ：往文件内逐行写入数据（支持传入可迭代对象）
+
+    邮件：
+        发送邮件：
+            yagmail (Yet Another GMAIL/SMTP client, 另一个 GMAIL / SMTP 客户端)：
+                import yagmail #导入 yagmail 模块
+                #yag = yagmail.SMTP(user='#发件人邮箱', password='#授权码', host='#服务器地址') #使用 SMTP(Simple Mail Transfer Protocol, 简单邮件传输协议) 协议与邮箱服务器建立连接
+                #yag.close() ：断开与邮箱服务器的连接
+                #yag.send(to=['#收件人邮箱'], subject='#邮件主题', contents='#邮件内容') #调用 yag.send() 方法发送邮件：
+                    参数 to ：接收一个单个收件人邮箱地址或包含多个收件人邮箱地址的列表
+                    参数 cc ：接受一个单个抄送人邮箱地址或包含多个抄送人邮箱地址的列表
+                    参数 bcc ：接受一个单个密送人邮箱地址或包含多个密送人邮箱地址的列表
+                    参数 contents （Tip ：此参数很智能）：
+                        可以接收一个元素列表，这时列表中每个元素对应邮件内容每一行
+                        可以接收文件路径或把文件路径作为列表中的元素传入，这时目标文件会作为附件发送，当目标文件不存在时文件路径会作为文本直接发送
+                        可以接收超链接标签
+                    参数 attachments ：附件路径
+
+    schedule ：
+        通过 import schedule 导入 schedule 模块
+        函数：
+            .run_pending() ：运行所有可以执行的任务
+            .run_all() ：运行所有任务
+            .clear() ：删除所有调度的任务
+            .cancel_job() ：删除一个任务
+            .every() ：创建一个调度任务，返回 job 对象
+            ._run_job() ：运行一个 job 对象
+            .next_run() ：获取下一个要运行任务的时间
+            .idle_seconds() ：还有多少秒开始运行任务
+            .do(#任务函数) ：执行任务函数
+            .at(#小时:#分钟) ：在目标时间执行
+        方法：
+            .every().second ：每一秒
+            .every().minute ：每一分钟
+            .every().hour ：每一小时
+            .every().day ：每一天
+            .every().week ：每一周
+            .every(#目标秒数).seconds ：每目标秒数
+            .every(#目标分钟数).minutes ：每目标分钟数
+            .every(#目标小时数).hours ：每目标小时数
+            .every(#目标天数).days ：每目标天数
+            .every(#目标周数).weeks ：每目标周数
+            .every.monday 
+
+其它：
+        外地环境的selenium配置：
+             >>># 初始化配置
+             >>>options = webdriver.ChromeOptions()
+             >>>options.add_argument('--no-sandbox')
+             >>>options.add_argument('--headless')
+             >>># 将配置传入浏览器
+             >>>browser = webdriver.Chrome(options=options)
+        selenium 扩展学习网站： https://selenium-python-zh.readthedocs.io/en/latest/
+
+        邮箱授权码：16位字符串，不是密码，但和密码同样重要，需要单独获取，如 SMTP 协议，开启 POP3/SMTP 服务后会获取到授权码
+        邮箱服务器地址：一般在邮箱官网的帮助里有详细说明
